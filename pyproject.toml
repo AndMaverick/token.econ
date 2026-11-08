@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "token.econ"
+version = "0.1.0"
+description = "Unit economics for AI products: margin per user, breakeven, usage limits for a target margin, and the price that hits it. Dependency-free Python."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "AndMaverick LLC" }]
+
+[tool.setuptools.packages.find]
+include = ["token_econ*"]
