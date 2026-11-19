@@ -1,0 +1,33 @@
+{
+  "name": "Illustrative AI assistant, $24 a month. Prices are round example numbers, not any vendor's list.",
+  "economics": {
+    "price_per_user": 24,
+    "requests_per_user": 220,
+    "input_tokens": 3200,
+    "output_tokens": 450,
+    "input_price_per_1m": 3.0,
+    "output_price_per_1m": 15.0,
+    "cached_input_price_per_1m": 0.3,
+    "cache_hit_rate": 0.55,
+    "reasoning_tokens": 120,
+    "retry_rate": 0.04,
+    "infra_overhead_rate": 0.08,
+    "support_cost_per_user": 0.9,
+    "payment_fee_rate": 0.029,
+    "payment_fee_fixed": 0.3,
+    "other_cost_per_user": 0.4
+  },
+  "population": {"kind": "lognormal", "median": 130, "sigma": 0.9},
+  "plans": [
+    {"name": "flat", "price": 24},
+    {"name": "flat-capped", "price": 24, "hard_cap": 600},
+    {"name": "hybrid", "price": 14, "included_requests": 150, "overage_per_request": 0.06}
+  ],
+  "trend": {"price_decline": 0.03, "usage_growth": 0.04, "token_growth": 0.01},
+  "months": 24,
+  "cohort": {"monthly_churn": 0.05, "cac": 70, "monthly_discount": 0.01},
+  "free_tier": {"free_per_paid": 4, "free_requests": 25},
+  "fixed_monthly_cost": 18000,
+  "target_margin": 0.7,
+  "gates": {"min_margin": 0.7, "min_ltv_cac": 3, "min_squeeze_month": 12, "max_loss_share": 0.25, "min_plan_margin": 0.5}
+}

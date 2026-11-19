@@ -1,56 +1,23 @@
-"""token.econ: unit economics for AI products. Margin per user, breakeven, and sensitivity."""
-
+"""token.econ: unit economics for AI products. Exact margin and breakeven, caching, agent loops, usage distributions and plan design,
+the price-versus-usage squeeze, cohort LTV, model cascades and sensitivity. You supply the prices; nothing here is a price list."""
 from __future__ import annotations
 
-import math
-from dataclasses import dataclass, replace
+__version__ = "0.2.0"
 
-__version__ = "0.1.0"
+from .agent import AgentRun, cost_curve, max_steps_for_budget  # noqa: E402
+from .cohort import Cohort  # noqa: E402
+from .economics import UnitEconomics, exact, price_for_margin, sweep  # noqa: E402
+from .plans import FreeTier, Plan, PlanResult, compare, simulate, solve_cap  # noqa: E402
+from .population import Empirical, Fixed, Lognormal, Pareto, concentration  # noqa: E402
+from .pricing import TokenPrice, Usage  # noqa: E402
+from .projection import MonthPoint, Trend, economics_at, project, squeeze_month  # noqa: E402
+from .routing import Tier, expected_cost, max_escalation_to_beat  # noqa: E402
+from .scenario import Analysis, Scenario, analyze  # noqa: E402
+from .sensitivity import Swing, grid, tornado  # noqa: E402
 
-
-@dataclass(frozen=True)
-class UnitEconomics:
-    price_per_user: float          # monthly revenue per user
-    requests_per_user: float       # monthly requests per user
-    input_tokens: float            # average input tokens per request
-    output_tokens: float           # average output tokens per request
-    input_price_per_1m: float
-    output_price_per_1m: float
-    other_cost_per_user: float = 0.0
-
-    def cost_per_request(self) -> float:
-        return (self.input_tokens * self.input_price_per_1m
-                + self.output_tokens * self.output_price_per_1m) / 1_000_000
-
-    def inference_cost(self) -> float:
-        return self.requests_per_user * self.cost_per_request()
-
-    def profit_per_user(self) -> float:
-        return self.price_per_user - self.inference_cost() - self.other_cost_per_user
-
-    def gross_margin(self) -> float:
-        return self.profit_per_user() / self.price_per_user
-
-    def breakeven_users(self, fixed_monthly_cost: float):
-        """Users needed to cover fixed cost, or None if each user loses money."""
-        profit = self.profit_per_user()
-        return math.ceil(fixed_monthly_cost / profit) if profit > 0 else None
-
-    def max_requests_for_margin(self, target_margin: float) -> int:
-        """Most monthly requests per user that still hits the target gross margin."""
-        budget = self.price_per_user * (1 - target_margin) - self.other_cost_per_user
-        per_request = self.cost_per_request()
-        return max(0, math.floor(budget / per_request)) if per_request > 0 else 0
-
-    def with_(self, **changes) -> "UnitEconomics":
-        return replace(self, **changes)
-
-
-def sweep(base: UnitEconomics, field: str, values) -> list:
-    """Gross margin as one input varies: [(value, margin), ...]."""
-    return [(v, base.with_(**{field: v}).gross_margin()) for v in values]
-
-
-def price_for_margin(base: UnitEconomics, target_margin: float) -> float:
-    """Lowest monthly price that reaches the target margin at current usage."""
-    return (base.inference_cost() + base.other_cost_per_user) / (1 - target_margin)
+__all__ = [
+    "AgentRun", "Analysis", "Cohort", "Empirical", "Fixed", "FreeTier", "Lognormal", "MonthPoint", "Pareto", "Plan", "PlanResult",
+    "Scenario", "Swing", "Tier", "TokenPrice", "Trend", "UnitEconomics", "Usage", "analyze", "compare", "concentration", "cost_curve",
+    "economics_at", "exact", "expected_cost", "grid", "max_escalation_to_beat", "max_steps_for_budget", "price_for_margin", "project",
+    "simulate", "solve_cap", "squeeze_month", "sweep", "tornado",
+]

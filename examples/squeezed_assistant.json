@@ -1,0 +1,23 @@
+{
+  "name": "Illustrative agent product on a flat $20 plan. Same shape as the healthy example, with heavier users, longer contexts and slower price declines. Prices are round example numbers.",
+  "economics": {
+    "price_per_user": 20,
+    "requests_per_user": 400,
+    "input_tokens": 9000,
+    "output_tokens": 900,
+    "input_price_per_1m": 3.0,
+    "output_price_per_1m": 15.0,
+    "retry_rate": 0.06,
+    "infra_overhead_rate": 0.08,
+    "payment_fee_rate": 0.029,
+    "payment_fee_fixed": 0.3
+  },
+  "population": {"kind": "lognormal", "median": 220, "sigma": 1.3},
+  "plans": [{"name": "flat", "price": 20}, {"name": "flat-capped", "price": 20, "hard_cap": 500}],
+  "trend": {"price_decline": 0.02, "usage_growth": 0.06, "token_growth": 0.03},
+  "months": 18,
+  "cohort": {"monthly_churn": 0.08, "cac": 90},
+  "fixed_monthly_cost": 25000,
+  "target_margin": 0.7,
+  "gates": {"min_margin": 0.7, "min_ltv_cac": 3, "min_squeeze_month": 12, "max_loss_share": 0.2}
+}
