@@ -4,12 +4,30 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "token.econ"
-version = "0.1.0"
-description = "Unit economics for AI products: margin per user, breakeven, usage limits for a target margin, and the price that hits it. Dependency-free Python."
+version = "0.2.0"
+description = "Unit economics for AI products: exact margin and breakeven, caching and agent loops, usage distributions and plan design, the price-versus-usage squeeze over time, cohort LTV, model cascades, sensitivity, and CI gates. Dependency-free Python."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "AndMaverick LLC" }]
 
+[project.scripts]
+token-econ = "token_econ.cli:main"
+
+[tool.setuptools.package-data]
+token_econ = ["py.typed"]
+
 [tool.setuptools.packages.find]
 include = ["token_econ*"]
+
+[tool.ruff]
+line-length = 130
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "C4", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+strict = true
+files = ["token_econ"]
