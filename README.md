@@ -1,8 +1,8 @@
 # token.econ
 
-The unit economics of an AI product, computed exactly. Given price, usage, token prices, caching and the costs around them, it tells you the margin per user, how many users cover your fixed costs, how many requests a user can make before you miss your target margin, what to charge to hit it, which users lose you money, and the month your margin crosses your floor if usage grows faster than token prices fall. Standard library only, Python 3.10 to 3.13, typed.
+Take an illustrative product that sells for $20 a month. Token prices fall every quarter, so the model behind it gets cheaper. Then a few heavy users start sending ten times what the average user sends, and the margin that looked safe is gone within a season. The numbers here are invented to show the shape of the problem, not drawn from any company. Falling token prices do not save a product whose usage grows faster than its price falls. Whether yours is one of them is arithmetic, and it is arithmetic that depends on assumptions you can write down.
 
-Falling token prices do not save a product whose usage grows faster than its price. This is the arithmetic that shows whether yours is one of them, and a gate you can put in CI so a pricing or product change that breaks it fails the build.
+token.econ does that arithmetic exactly. Given price, usage, token prices, caching and the costs around them, it tells you the margin per user, how many users cover your fixed costs, how many requests a user can make before you miss your target margin, what to charge to hit it, which users lose you money, and the month your margin crosses your floor if usage grows faster than token prices fall. It also runs as a gate in CI, so a pricing or product change that breaks the margin fails the build. Standard library only, Python 3.10 to 3.13, typed.
 
 ## Use
 
