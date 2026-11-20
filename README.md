@@ -48,12 +48,12 @@ Cohort.from_economics(e, monthly_churn=0.05, cac=70).ltv_to_cac()
 | `economics` | margin, profit, breakeven users, max requests for a margin, price for a margin, cache hit rate and output length needed for a margin |
 | `pricing` | what one request costs with cached reads, cache writes, reasoning tokens and a batch discount (you supply every price) |
 | `agent` | why agent loops blow budgets: input tokens grow with the square of the steps; cost with and without caching; the most steps a budget buys |
-| `population` | lognormal, Pareto and measured usage distributions with exact means and top-share concentration |
+| `population` | lognormal, Pareto and measured usage distributions with exact means and the share held by the top users |
 | `plans` | flat, capped, metered and hybrid plans run across a population: margin, share of users losing money, whale cost share; the highest cap that hits a margin; free tier cost and the paid share it needs |
 | `projection` | margin month by month under price decline, usage growth and token growth; the first month below your floor; the price decline that exactly cancels growth |
 | `cohort` | lifetime value with churn and discounting, LTV to CAC, payments to recover CAC |
 | `routing` | expected cost of a model cascade and the escalation rate above which the cheap model stops paying |
-| `sensitivity` | tornado ranking of the inputs that move margin most, and two-way grids |
+| `sensitivity` | tornado ranking of the inputs that move margin most, and grids over two inputs |
 | `scenario`, CLI | one JSON file of assumptions plus gates; a report with a fingerprint; exit code 1 when a gate is missed |
 
 ## Design
@@ -64,7 +64,7 @@ Cohort.from_economics(e, monthly_churn=0.05, cac=70).ltv_to_cac()
 - **Immutable inputs.** `with_()` returns a modified copy, so scenarios never contaminate each other.
 - **You supply the prices.** This library ships no price table, because a stale one is worse than none. The example files use round numbers and say so.
 - **Strict scenario files.** An unknown key or gate name is an error naming it, because a misspelt `min_marjin` would otherwise silently pass.
-- **Deterministic.** The same scenario gives byte-identical output in any process under any hash seed, and the report carries the SHA-256 of the scenario it was computed from.
+- **Deterministic.** The same scenario gives output identical byte for byte in any process under any hash seed, and the report carries the SHA-256 of the scenario it was computed from.
 
 ## Command line
 
@@ -132,19 +132,19 @@ float answers exact     20000/20000 profit and cost per request equal the correc
 breakeven users         20000/20000 equal the exact ceiling; a plain float ceil is wrong in 0 of 4951 profitable cases
 max requests            20000/20000 equal the exact floor; a plain float floor is wrong in 0 of them
 exact-multiple traps    20000/20000 correct; a plain float ceil is wrong in 2816 (14.1%) of cases where the answer is a whole number
-squeeze month           334/334 closed-form answers equal a month-by-month search of the full model
+squeeze month           334/334 closed-form answers equal a month by month search of the full model
 population means        worst relative error 1.3e-16 across 18 distribution and size combinations
 top 1% share            lognormal sigma 1.0: library 0.0924, analytic 0.0924, 400,000 random draws 0.0929; pareto alpha 2 exactly 0.100 = 0.01^(1-1/2)
 cohort LTV              worst relative error 1.5e-16 against a 20,000-term sum
 speed                   20000 random economics checked three ways in 7.6s on this machine
 ```
 
-"Exact" means computed on fractions by code in `tests/test_properties.py` that shares nothing with the library. The random cases rarely land the answer on a whole number, which is where floating point fails, so the traps row builds cases where it does: there a plain float ceiling is wrong in about one case in seven. The squeeze month is found in closed form and then confirmed against the full model at the boundary; the row shows it equals a month-by-month search. Timing depends on the machine.
+"Exact" means computed on fractions by code in `tests/test_properties.py` that shares nothing with the library. The random cases rarely land the answer on a whole number, which is where floating point fails, so the traps row builds cases where it does: there a plain float ceiling is wrong in about one case in seven. The squeeze month is found in closed form and then confirmed against the full model at the boundary; the row shows it equals a month by month search. Timing depends on the machine.
 
 ## Honest limits
 
 - **The arithmetic is checked. The assumptions are yours.** If your usage distribution, churn or price trend is wrong, the exactness of the answer is no comfort. Run the tornado to see which assumption matters most, then measure that one.
-- **Usage distributions are stylised.** Lognormal and Pareto describe many products and not yours. Use `Empirical` with your own per-user counts when you have them.
+- **Usage distributions are stylised.** Lognormal and Pareto describe many products and not yours. Use `Empirical` with your own counts per user when you have them.
 - **Plans assume users behave the same under a limit.** A hard cap holds heavy users at the cap. It does not model them churning, buying more, or complaining.
 - **Averages per request.** Tokens per request are one average per user. A product whose requests are bimodal (many short, few huge) should be modelled as two products, or as an agent run.
 - **Cohort maths is the simple kind.** Constant churn, payment at the start of each month, no expansion revenue and no seasonality.
@@ -166,6 +166,6 @@ MIT licensed. Built by [AndMaverick LLC](https://www.andmaverick.com).
 
 ---
 
-**Related reading:** [The Meter Is Running. Nobody Built the Architecture to Stop It.](https://blog.andmaverick.com/the-meter-is-running-nobody-built-the-architecture-to-stop-it?utm_source=github&utm_medium=repo&utm_campaign=token.econ)
+**Read the thinking:** [The Meter Is Running. Nobody Built the Architecture to Stop It.](https://blog.andmaverick.com/the-meter-is-running-nobody-built-the-architecture-to-stop-it?utm_source=github&utm_medium=repo&utm_campaign=token.econ)
 
 **If this is your problem.** If your AI spend is outrunning your results, that is an architecture problem, and it is solvable. I am happy to look at it with you. [Begin a conversation](https://calendly.com/andmaverick?utm_source=github&utm_medium=repo&utm_campaign=token.econ).
